@@ -39,20 +39,21 @@
 
 \newcommand*{\assocarray}[1]{%
   \csnewcommand*{#1}[1][]{\@ifstar{\@assocarraydefstar@ii{#1}{##1}}{\@assocarraydefuse@ii{#1}{##1}}}%
+  %% The following command is only for backward compatibility
   \csnewcommand{the#1}[1][]{\@assocarrayuse@ii{#1}{##1}}%
 }
 
-\def\@assocarraydefstar@ii#1#2{%
+\newcommand*{\@assocarraydefstar@ii}[2]{%
   % \typeout{MAPSTAR @assocarraydefstar@ii -#1- -#2-}%
   \@ifnextchar:{\@assocarraydefstar@iiia{#1}}{\@assocarraydefstar@iiib{#1}}%
 }
 
 \def\@assocarraydefstar@iiia#1:=#2{%
-  \@assocarraydefstar@iiib#1[]:={#2[]}
+  \@assocarraydefstar@iiib#1[]:={#2[]}%
 }
 
 \def\@assocarraydefstar@iiib#1[#2]:=#3{%
-  \@assocarraydefstar@split#3{\@assocarraydefstar@Vkey}{\@assocarraydefstar@Vidx}
+  \@assocarraydefstar@split#3{\@assocarraydefstar@Vkey}{\@assocarraydefstar@Vidx}%
   \csedef{@assocarray@#1**@idx}{#2}%
   \csedef{@assocarray@#1**@Vkey}{\@assocarraydefstar@Vkey}%
   \csedef{@assocarray@#1**@Vidx}{\@assocarraydefstar@Vidx}%
@@ -66,7 +67,7 @@
   \def#4{#2}%
 }
 
-\def\@assocarraydefuse@ii#1#2{%
+\newcommand*{\@assocarraydefuse@ii}[2]{%
   % #1 = name
   % #2 = index
   % \typeout{MAP @assocarraydefuse@ii #1 #2}%
@@ -81,7 +82,7 @@
   \csedef{@assocarray@#1@#2}{#3}%
 }
 
-\def\@assocarrayuse@ii#1#2{%
+\newcommand{\@assocarrayuse@ii}[2]{%
   % #1 = name
   % #2 = index
   % \typeout{MAP use #1 #2}%
