@@ -1,0 +1,169 @@
+% !TEX TS-program = pdflatex
+%
+% Created by João Lourenço on 2020-12-12.
+% Copyright (c) 2020 .
+\documentclass{article}
+
+\usepackage{xstring}
+
+\begin{document}
+
+
+\makeatletter
+
+\providecommand*\csnewcommand{\@star@or@long\csnew@command}
+\providecommand*\csnew@command[1]{\expandafter\new@command\csname#1\endcsname}
+\providecommand*\recsnewcommand{\@star@or@long\recsnew@command}
+\providecommand*\recsnew@command[1]{\expandafter\renew@command\csname#1\endcsname}
+
+% Shamelessly tolen from etoolbox
+\providecommand*{\csedef}[1]{\expandafter\edef\csname#1\endcsname}
+\providecommand*{\csuse}[1]{%
+  \ifcsname#1\endcsname%
+    \csname#1\expandafter\endcsname%
+  \fi%
+}
+\providecommand*{\ifcsdef}[1]{%
+  \ifcsname#1\endcsname%
+    \expandafter\@firstoftwo%
+  \else%
+    \expandafter\@secondoftwo%
+  \fi%
+}
+
+
+\newcommand*{\assocarray}[1]{%
+  \csnewcommand*{#1}[1][]{\@ifstar{\@assocarraydefstar@ii{#1}{##1}}{\@assocarraydefuse@ii{#1}{##1}}}%
+}
+
+\def\@assocarraydefstar@ii#1#2{%
+  % \typeout{MAPSTAR @assocarraydefstar@ii -#1- -#2-}%
+  \@ifnextchar:{\@assocarraydefstar@iiia{#1}}{\@assocarraydefstar@iiib{#1}}%
+}
+
+\def\@assocarraydefstar@iiia#1:=#2{%
+  \@assocarraydefstar@iiib#1[]:={#2[]}
+}
+
+\def\@assocarraydefstar@iiib#1[#2]:=#3{%
+  \@assocarraydefstar@split#3{\@assocarraydefstar@Vkey}{\@assocarraydefstar@Vidx}
+  \csedef{@assocarray@#1**@idx}{#2}%
+  \csedef{@assocarray@#1**@Vkey}{\@assocarraydefstar@Vkey}%
+  \csedef{@assocarray@#1**@Vidx}{\@assocarraydefstar@Vidx}%
+  % \typeout{MAPSTAR @assocarraydefstar@iiib @assocarray@#1**@idx=#2}%
+  % \typeout{MAPSTAR @assocarraydefstar@iiib @assocarray@#1**@Vkey=\@assocarraydefstar@Vkey}%
+  % \typeout{MAPSTAR @assocarraydefstar@iiib @assocarray@#1**@Vidx=#2=\@assocarraydefstar@Vidx}%
+}
+
+\def\@assocarraydefstar@split#1[#2]#3#4{%
+  \def#3{#1}%
+  \def#4{#2}%
+}
+
+
+% \def\@assocarraydefstar@iiib#1[#2]:=#3[#4]{%
+%   \typeout{MAPSTAR @assocarraydefstar@iiib -#1-#2-#3-#4-}%
+%   % \csedef{@assocarray@#1*@}{#2}%
+% }
+
+\def\@assocarraydefuse@ii#1#2{%
+  % #1 = name
+  % #2 = index
+  % \typeout{MAP @assocarraydefuse@ii #1 #2}%
+  \@ifnextchar:{\@assocarraydef@iii{#1}{#2}}{\@assocarrayuse@ii{#1}{#2}}%
+}
+
+\def\@assocarraydef@iii#1#2:=#3{%
+  % #1 = name
+  % #2 = index
+  % #3 = value
+  % \typeout{MAP@assocarraydef@iii  @assocarray@#1@#2=#3}%
+  \csedef{@assocarray@#1@#2}{#3}%
+}
+
+\def\@assocarrayuse@ii#1#2{%
+  % #1 = name
+  % #2 = index
+  % \typeout{MAP use #1 #2}%
+  \ifcsdef{@assocarray@#1@#2}%
+    {\csuse{@assocarray@#1@#2}}% Direct use
+    {% Indirect use
+      \ifcsdef{@assocarray@#1**@idx}%
+        {%
+          \IfEq{#2}{}%
+            {% Full redirection — indirect use without index
+              \IfEq{\csuse{@assocarray@#1**@idx}}{}%
+                {\csuse{\csuse{@assocarray@#1**@Vkey}}}%
+                {\errmessage{[1] assocarray undefined: #1 [#2]}}
+            }%
+            {% Indirect use with index
+              % @assocarray@#1**@idx=\csuse{@assocarray@#1**@idx}\par
+              % @assocarray@#1**@Vkey=\csuse{@assocarray@#1**@Vkey}\par
+              % @assocarray@#1**@Vidx=\csuse{@assocarray@#1**@Vidx}\par
+              \StrCut{\csuse{@assocarray@#1**@idx}}{*}\@assocarray@idx@left\@assocarray@idx@right%
+              \StrCut{\csuse{@assocarray@#1**@Vidx}}{*}\@assocarray@Vidx@left\@assocarray@Vidx@right%
+              % \#1=#1\par
+              % \#2=#2\par
+              % @assocarray@idx@left='\@assocarray@idx@left'\par
+              % @assocarray@idx@right='\@assocarray@idx@right'\par
+              % @assocarray@Vidx@left='\@assocarray@Vidx@left'\par
+              % @assocarray@Vidx@right='\@assocarray@Vidx@right'\par
+              \StrDel{#2}{\@assocarray@idx@left}[\@assocarray@star@right]%
+              \StrDel{\@assocarray@star@right}{\@assocarray@idx@right}[\@assocarray@star]%
+              % @assocarray@star=\@assocarray@star\par
+              \ifcsdef{@assocarray@%
+                       \csuse{@assocarray@#1**@Vkey}@%
+                       \csuse{@assocarray@Vidx@left}%
+                       \@assocarray@star%
+                       \csuse{@assocarray@Vidx@right}%
+              }{%
+                \csuse{@assocarray@%
+                       \csuse{@assocarray@#1**@Vkey}@%
+                       \csuse{@assocarray@Vidx@left}%
+                       \@assocarray@star%
+                       \csuse{@assocarray@Vidx@right}%
+                }%
+              }%
+              {\errmessage{[2] assocarray undefined: #1[#2]}}%
+            }%
+        }%
+        {\errmessage{[3] assocarray undefined: #1[#2]}}%
+    }%
+}
+
+\makeatother
+
+\assocarray{ma}
+\assocarray{mb}
+\assocarray{mc}
+\assocarray{md}
+
+\ma:={zero}
+\ma[1]:={a}
+\ma[2]:={b}
+\ma[3,x,5]:={c}
+
+\ma\par
+\ma[1]\par
+\ma[2]\par
+\ma[3,x,5]\par
+% \ma[3,y,5]\par %error
+
+\mb*:={ma}
+\mb\par
+\mb[1]\par
+\mb[2]\par
+\mb[3,x,5]\par
+% \mb[3,y,5]\par %error
+%
+\mc*[left,*,right]:={ma[3,*,5]}
+% % \mc\par %error
+% % \mc[1]\par
+% % \mc[2]\par
+\mc[left,x,right]\par
+% % \mc[3,y,5]\par %error
+%
+\md*[a,b,*,c]:={ma[*]}
+\md[a,b,1,c]\par
+
+\end{document}
