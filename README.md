@@ -1,2 +1,2 @@
 # assocarray
-Associative array for laTeX
+Associative array for LaTeX
