@@ -1,0 +1,45 @@
+% !TEX TS-program = pdflatex
+%
+% Created by João Lourenço on 2020-12-14.
+% Copyright (c) 2020 Joao M. Lourenco.
+\documentclass{article}
+
+\usepackage{assocarray}
+
+\begin{document}
+
+\assocarray{ma}
+\assocarray{mb}
+\assocarray{mc}
+\assocarray{md}
+
+\ma:={zero}
+\ma[1]:={a}
+\ma[2]:={b}
+\ma[3,x,5]:={c}
+
+MA=\ma\par
+MA[1]=\ma[1]\par
+MA[2]=\ma[2]\par
+MA[3,x,5]=\ma[3,x,5]\par
+% \ma[3,y,5]\par %error
+
+\mb*:={ma}
+MB=\mb\par
+MB[1]=\mb[1]\par
+MB[2]=\mb[2]\par
+MB[3,x,5]=\mb[3,x,5]\par
+% \mb[3,y,5]\par %error
+% %
+\mc*[left,*,right]:={ma[3,*,5]}
+% \mc\par %error
+% \mc[1]\par
+% % \mc[2]\par
+MC[left,x,right]=\mc[left,x,right]\par
+% % \mc[3,y,5]\par %error
+% %
+\md*[a,b,*,c]:={ma[*]}
+MD[a,b,1,c]=\md[a,b,1,c]\par
+THEMD[a,b,1,c]=\themd[a,b,1,c]\par
+
+\end{document}
