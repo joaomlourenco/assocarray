@@ -15,7 +15,7 @@
 \assocarray{md}
 \assocarray{me}
 
-\ma:={zero}
+\ma:={base}
 \ma[1]:={a}
 \ma[2]:={b}
 \ma[3,x,5]:={c}
@@ -35,14 +35,14 @@ MB[3,x,5]=\mb[3,x,5]\par
 % %
 \mc*[left,*,right]:={ma[3,*,5]}
 % \mc\par %error
-% \mc[1]\par
-% % \mc[2]\par
+% \mc[1]\par %error
+% % \mc[2]\par %error
 MC[left,x,right]=\mc[left,x,right]\par
 % % \mc[3,y,5]\par %error
 % %
 \md*[a,b,*,c]:={ma[*]}
 MD[a,b,1,c]=\md[a,b,1,c]\par
-% THEMD[a,b,1,c]=\themd[a,b,1,c]\par
+THEMD[a,b,1,c]=\themd[a,b,1,c]\par
 
 \me*:={mb}
 ME=\me\par

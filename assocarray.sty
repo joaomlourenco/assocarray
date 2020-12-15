@@ -104,22 +104,67 @@
   % #1 = name
   % #2 = index
   % \typeout{ASSOCARRAY use #1 #2}%
-  \ifcsdef{@assocarray@#1@#2}%
-    {[u1] \csuse{@assocarray@#1@#2}}% Direct use
-    {% Indirect use
-      \ifcsdef{@assocarray@#1*@idx}%
+  \ifcsdef{@assocarray@#1@#2}{%
+    % Direct use
+    \csuse{@assocarray@#1@#2}%
+  }{% Maybe it is a redirection
+    \ifcsdef{@assocarray@#1*@Vkey}{%
+      % Definitely is a redirection
+      \IfEq{\csuse{@assocarray@#1*@idx}}{}{%
+        % Full redirction
+        \@assocarrayuse@ii{\csuse{@assocarray@#1*@Vkey}}{#2}%
+      }{% Maybe partial redirection
+              % @assocarray@#1*@idx=\csuse{@assocarray@#1*@idx}\par
+              % @assocarray@#1*@Vkey=\csuse{@assocarray@#1*@Vkey}\par
+              % @assocarray@#1*@Vidx=\csuse{@assocarray@#1*@Vidx}\par
+              \StrCut{\csuse{@assocarray@#1*@idx}}{*}\@assocarray@idx@left\@assocarray@idx@right%
+              \StrCut{\csuse{@assocarray@#1*@Vidx}}{*}\@assocarray@Vidx@left\@assocarray@Vidx@right%
+              % \#1=#1\par
+              % \#2=#2\par
+              % @assocarray@idx@left='\@assocarray@idx@left'\par
+              % @assocarray@idx@right='\@assocarray@idx@right'\par
+              % @assocarray@Vidx@left='\@assocarray@Vidx@left'\par
+              % @assocarray@Vidx@right='\@assocarray@Vidx@right'\par
+              \StrDel{#2}{\@assocarray@idx@left}[\@assocarray@star@right]%
+              \StrDel{\@assocarray@star@right}{\@assocarray@idx@right}[\@assocarray@star]%
+              % @assocarray@star=\@assocarray@star\par
+              \ifcsdef{@assocarray@%
+                       \csuse{@assocarray@#1*@Vkey}@%
+                       \csuse{@assocarray@Vidx@left}%
+                       \@assocarray@star%
+                       \csuse{@assocarray@Vidx@right}}{%
+                  \@assocarrayuse@ii{%
+                       \csuse{@assocarray@#1*@Vkey}%
+                  }{%
+                       \csuse{@assocarray@Vidx@left}%
+                       \@assocarray@star%
+                       \csuse{@assocarray@Vidx@right}%
+                  }%
+              }{% Invalid partial redirection
+                  \errmessage{[2] assocarray undefined: #1[#2]}%
+              }%
+      }%
+    }{% No redirection
+      \errmessage{[3] assocarray undefined: #1[#2]}%
+    }%
+  }%
+}      
+      
+\endinput
+
+
         {%
           \IfEq{#2}{}%
             {% Full redirection — indirect use without index
               \IfEq{\csuse{@assocarray@#1*@idx}}{}%
                 {[u2] {\csuse{\csuse{@assocarray@#1*@Vkey}}}}%
-                {\errmessage{[1] assocarray undefined: #1 [#2]}}
+                {\errmessage{[1] assocarray undefined: #1 [#2]}}%
             }%
             {% Indirect use with index
               % @assocarray@#1*@idx=\csuse{@assocarray@#1*@idx}\par
               % @assocarray@#1*@Vkey=\csuse{@assocarray@#1*@Vkey}\par
               % @assocarray@#1*@Vidx=\csuse{@assocarray@#1*@Vidx}\par
-              [#2] \StrCut{\csuse{@assocarray@#1*@idx}}{*}\@assocarray@idx@left\@assocarray@idx@right%
+              \StrCut{\csuse{@assocarray@#1*@idx}}{*}\@assocarray@idx@left\@assocarray@idx@right%
               \StrCut{\csuse{@assocarray@#1*@Vidx}}{*}\@assocarray@Vidx@left\@assocarray@Vidx@right%
               % \#1=#1\par
               % \#2=#2\par
