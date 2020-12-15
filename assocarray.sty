@@ -1,20 +1,38 @@
-%---------------------------------------------------------------------------
-% Copyright 2020 Joao M. Lourenco, NOVA University Lisbon.
-%
-% This work may be distributed and/or modified under the
-% conditions of the LaTeX Project Public License, either version 1.3
-% of this license or (at your option) any later version.
-% The latest version of this license is in
-%   http://www.latex-project.org/lppl.txt
-% and version 1.3 or later is part of all distributions of LaTeX
-% version 2005/12/01 or later.  
-%---------------------------------------------------------------------------
+% !TeX encoding = UTF-8
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                    %
+\def\assocarrayname           {assocarray}                           %
+\def\xstringversion              {0.01}                              %
+%                                                                    %
+\def\xstringdate              {2020/12/14}                           %
+%                                                                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                    %
+% Author     : João Lourenço                                         %
+% Status     : Maintained                                            %
+% Maintainer : João Lourenço                                         %
+% Email      : joao.lourenco@fct.unl.pt                              %
+% Package URL:                                                       %
+% Bug tracker: https://github.com/joaomlourenco/assocarray/issues    %
+% Repository : https://github.com/joaomlourenco/assocarray           %
+% Copyright  : João Lourenço 2020                                    %
+% Licence    : Released under the LaTeX Project Public License v1.3c %
+%              or later, see http://www.latex-project.org/lppl.txt   %
+% Files      : 1) assocarray.sty                                     %
+%              2) assocarray.tex                                     %
+%              3) assocarray-example.tex                             %
+%              4) README                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 
-\ProvidesPackage{assocarray}[2020/12/14, Joao Lourenco, Provides as associative array]
+\ProvidesPackage{assocarray}[\xstringdate\space v\xstringversion\space, Joao Lourenco, Provides an associative array]
 
 \RequirePackage{xstring}
+
+\newif\ifopt@debug
+\DeclareOption{debug}{\opt@debugtrue}
+\ProcessOptions\relax
 
 \providecommand*\csnewcommand{\@star@or@long\csnew@command}
 \providecommand*\csnew@command[1]{\expandafter\new@command\csname#1\endcsname}
@@ -44,7 +62,7 @@
 }
 
 \newcommand*{\@assocarraydefstar@ii}[2]{%
-  % \typeout{MAPSTAR @assocarraydefstar@ii -#1- -#2-}%
+  % \typeout{ASSOCARRAYSTAR @assocarraydefstar@ii -#1- -#2-}%
   \@ifnextchar:{\@assocarraydefstar@iiia{#1}}{\@assocarraydefstar@iiib{#1}}%
 }
 
@@ -54,12 +72,12 @@
 
 \def\@assocarraydefstar@iiib#1[#2]:=#3{%
   \@assocarraydefstar@split#3{\@assocarraydefstar@Vkey}{\@assocarraydefstar@Vidx}%
-  \csedef{@assocarray@#1**@idx}{#2}%
-  \csedef{@assocarray@#1**@Vkey}{\@assocarraydefstar@Vkey}%
-  \csedef{@assocarray@#1**@Vidx}{\@assocarraydefstar@Vidx}%
-  % \typeout{MAPSTAR @assocarraydefstar@iiib @assocarray@#1**@idx=#2}%
-  % \typeout{MAPSTAR @assocarraydefstar@iiib @assocarray@#1**@Vkey=\@assocarraydefstar@Vkey}%
-  % \typeout{MAPSTAR @assocarraydefstar@iiib @assocarray@#1**@Vidx=#2=\@assocarraydefstar@Vidx}%
+  \csedef{@assocarray@#1*@idx}{#2}%
+  \csedef{@assocarray@#1*@Vkey}{\@assocarraydefstar@Vkey}%
+  \csedef{@assocarray@#1*@Vidx}{\@assocarraydefstar@Vidx}%
+  \typeout{ASSOCARRAYSTAR @assocarraydefstar@iiib @assocarray@#1*@idx=#2}%
+  \typeout{ASSOCARRAYSTAR @assocarraydefstar@iiib @assocarray@#1*@Vkey=\@assocarraydefstar@Vkey}%
+  \typeout{ASSOCARRAYSTAR @assocarraydefstar@iiib @assocarray@#1*@Vidx=\@assocarraydefstar@Vidx}%
 }
 
 \def\@assocarraydefstar@split#1[#2]#3#4{%
@@ -70,7 +88,7 @@
 \newcommand*{\@assocarraydefuse@ii}[2]{%
   % #1 = name
   % #2 = index
-  % \typeout{MAP @assocarraydefuse@ii #1 #2}%
+  % \typeout{ASSOCARRAY @assocarraydefuse@ii #1 #2}%
   \@ifnextchar:{\@assocarraydef@iii{#1}{#2}}{\@assocarrayuse@ii{#1}{#2}}%
 }
 
@@ -78,31 +96,31 @@
   % #1 = name
   % #2 = index
   % #3 = value
-  % \typeout{MAP@assocarraydef@iii  @assocarray@#1@#2=#3}%
+  % \typeout{ASSOCARRAY@assocarraydef@iii  @assocarray@#1@#2=#3}%
   \csedef{@assocarray@#1@#2}{#3}%
 }
 
 \newcommand{\@assocarrayuse@ii}[2]{%
   % #1 = name
   % #2 = index
-  % \typeout{MAP use #1 #2}%
+  % \typeout{ASSOCARRAY use #1 #2}%
   \ifcsdef{@assocarray@#1@#2}%
-    {\csuse{@assocarray@#1@#2}}% Direct use
+    {[u1] \csuse{@assocarray@#1@#2}}% Direct use
     {% Indirect use
-      \ifcsdef{@assocarray@#1**@idx}%
+      \ifcsdef{@assocarray@#1*@idx}%
         {%
           \IfEq{#2}{}%
             {% Full redirection — indirect use without index
-              \IfEq{\csuse{@assocarray@#1**@idx}}{}%
-                {\csuse{\csuse{@assocarray@#1**@Vkey}}}%
+              \IfEq{\csuse{@assocarray@#1*@idx}}{}%
+                {[u2] {\csuse{\csuse{@assocarray@#1*@Vkey}}}}%
                 {\errmessage{[1] assocarray undefined: #1 [#2]}}
             }%
             {% Indirect use with index
-              % @assocarray@#1**@idx=\csuse{@assocarray@#1**@idx}\par
-              % @assocarray@#1**@Vkey=\csuse{@assocarray@#1**@Vkey}\par
-              % @assocarray@#1**@Vidx=\csuse{@assocarray@#1**@Vidx}\par
-              \StrCut{\csuse{@assocarray@#1**@idx}}{*}\@assocarray@idx@left\@assocarray@idx@right%
-              \StrCut{\csuse{@assocarray@#1**@Vidx}}{*}\@assocarray@Vidx@left\@assocarray@Vidx@right%
+              % @assocarray@#1*@idx=\csuse{@assocarray@#1*@idx}\par
+              % @assocarray@#1*@Vkey=\csuse{@assocarray@#1*@Vkey}\par
+              % @assocarray@#1*@Vidx=\csuse{@assocarray@#1*@Vidx}\par
+              [#2] \StrCut{\csuse{@assocarray@#1*@idx}}{*}\@assocarray@idx@left\@assocarray@idx@right%
+              \StrCut{\csuse{@assocarray@#1*@Vidx}}{*}\@assocarray@Vidx@left\@assocarray@Vidx@right%
               % \#1=#1\par
               % \#2=#2\par
               % @assocarray@idx@left='\@assocarray@idx@left'\par
@@ -113,17 +131,16 @@
               \StrDel{\@assocarray@star@right}{\@assocarray@idx@right}[\@assocarray@star]%
               % @assocarray@star=\@assocarray@star\par
               \ifcsdef{@assocarray@%
-                       \csuse{@assocarray@#1**@Vkey}@%
+                       \csuse{@assocarray@#1*@Vkey}@%
                        \csuse{@assocarray@Vidx@left}%
                        \@assocarray@star%
-                       \csuse{@assocarray@Vidx@right}%
-              }{%
-                \csuse{@assocarray@%
-                       \csuse{@assocarray@#1**@Vkey}@%
-                       \csuse{@assocarray@Vidx@left}%
-                       \@assocarray@star%
-                       \csuse{@assocarray@Vidx@right}%
-                }%
+                       \csuse{@assocarray@Vidx@right}}%
+              {%
+                [u3] \csuse{@assocarray@%
+                            \csuse{@assocarray@#1*@Vkey}@%
+                            \csuse{@assocarray@Vidx@left}%
+                            \@assocarray@star%
+                            \csuse{@assocarray@Vidx@right}}%
               }%
               {\errmessage{[2] assocarray undefined: #1[#2]}}%
             }%
