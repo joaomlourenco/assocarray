@@ -8,46 +8,123 @@
 \usepackage{assocarray}
 
 \begin{document}
-
+  
 \assocarray{ma}
 \assocarray{mb}
 \assocarray{mc}
 \assocarray{md}
 \assocarray{me}
 
-\ma:={base}
-\ma[1]:={a}
-\ma[2]:={b}
-\ma[3,x,5]:={c}
+\ma:={“base1”}
+\ma[1]:={“a”}
+\ma[2]:={“b”}
+\ma[3,x,5]:={“c”}
 
-MA=\ma\par
-MA[1]=\ma[1]\par
-MA[2]=\ma[2]\par
-MA[3,x,5]=\ma[3,x,5]\par
-% \ma[3,y,5]\par %error
+\newcommand{\eval}[2]{%
+  #1[#2]=\csuse{#1}[#2]=\par
+}
 
-\mb*:={ma}
-MB=\mb\par
-MB[1]=\mb[1]\par
-MB[2]=\mb[2]\par
-MB[3,x,5]=\mb[3,x,5]\par
-% \mb[3,y,5]\par %error
+\eval{ma}{1}
+\eval{ma}{2}
+\eval{ma}{3,x,5}
+\eval{ma}{9}
+
+\mb*[*]:={ma[*]}
+\eval{mb}{1}
+\eval{mb}{2}
+\eval{mb}{3,x,5}
+\eval{mb}{9}
+\mb[9]:={9}
+\eval{mb}{9}
+
+\mb*[u,*]:={ma[*]}
+
+\mc*[u,*]:={mb[*]}
+\eval{mc}{u,1}
+\eval{mc}{u,2}
+\eval{mc}{u,3,x,5}
+\eval{mc}{u,9}
+
+% \mb*[a,*]:={ma[3,*,5]}
+% \eval{mb}{a,x}
+% \eval{mb}{a,y}
+%
+% \mb*[*,b]:={ma[3,*,5]}
+% \eval{mb}{x,b}
+% \eval{mb}{y,b}
+%
+% \mc*:={mb}
+% \eval{mc}{a,x}
+% \eval{mc}{a,y}
+% \eval{mc}{x,b}
+% \eval{mc}{y,b}
+
+
+% MA=\ma+\par
+% MA[1]=\ma[1]+\par
+% MA[2]=\ma[2]+\par
+% MA[9]=\ma[9]+\par
+% MA[3,x,5]=\ma[3,x,5]+\par
+% \ma[3,y,5]+\par %error
+
+% \ \par
+% \mb*[a,*,b]:={ma[3,*,5]}\par
+% \eval{mb}{a,x,b}
+% \mb*[u,*]:={ma[*]}\par
+% \eval{mb}{u,2}
+% \eval{mb}{a,x,b}
+% \eval{mb}{2}
+% % \mb*[*]:={ma[*]}\par
+% \mb*[*]:={ma[*]}
+% \eval{mb}{2}
+% \eval{mb}{a,x,b}
+% MB[a,x,b]=\mb[a,x,b]+\par
+% \mb*:={ma}\par
+% \mb*[a]:={ma[3]}\par
+% \mb*[a,*]:={ma[3,*]}\par
+% \mb*[*,b]:={ma[*,5]}\par
+% \mb*[a,*]:={ma[*,5]}\par
+% MB[1]=\mb[1]+\par
+% MB[1]=\mb[1]+\par
+% MB[a,x,5]=\mb[3,x,5]+\par
+% % \mb[1]:={mymb[1]}
+% % MB[1]=\mb[1]+\par
+% % % MB=\mb\par
+% % MB[1]=\mb[1]+\par
+% % MB[2]=\mb[2]+\par
+% % MB[3,x,5]=\mb[3,x,5]+\par
+% \mb*[x,*]:={ma[*]}
+% MB[1]=\mb[1]+\par
+% % MB[a,x,b]=\mb[a,x,b]+\par
+% MB[x,2]=\mb[x,2]+\par
+% MB[3,x,5]=\mb[3,x,5]+\par
+% % % MB[1,x,b]=\mb[1,x,b]+\par %error
+% % %
+% % % MB[3,y,5]=\mb[3,y,5]+\par %error
+% % % % %
 % %
-\mc*[left,*,right]:={ma[3,*,5]}
-% \mc\par %error
-% \mc[1]\par %error
-% % \mc[2]\par %error
-MC[left,x,right]=\mc[left,x,right]\par
-% % \mc[3,y,5]\par %error
+% % \ \par
+% % \mc*[left,*,right]:={ma[3,*,5]}
+% % % \mc\par %error
+% % % \mc[1]+\par %error
+% % % \mc[2]+\par %error
+% % MC[left,x,right]=\mc[left,x,right]+\par
+% % % \mc[3,y,5]+\par %error
+% % % % %
 % %
-\md*[a,b,*,c]:={ma[*]}
-MD[a,b,1,c]=\md[a,b,1,c]\par
-THEMD[a,b,1,c]=\themd[a,b,1,c]\par
+% % \ \par
+% % \md*[a,b,*,c]:={ma[*]}
+% % MD[a,b,1,c]=\md[a,b,1,c]+\par
+% % THEMD[a,b,1,c]=\themd[a,b,1,c]+\par
+% %
+% % \ \par
+% % \me*:={mb}
+% % ME=\me+\par
+% % \me*[a,*,b]:={ma[3,*,5]}
+% % ME[a,x,b]=\me[a,x,b]+\par
+% % ME[1]=\me[1]+\par
+% % ME[2]=\me[2]+\par
+% % ME[3,x,5]=\me[3,x,5]+\par
 
-\me*:={mb}
-ME=\me\par
-ME[1]=\me[1]\par
-ME[2]=\me[2]\par
-ME[3,x,5]=\me[3,x,5]\par
 
 \end{document}
